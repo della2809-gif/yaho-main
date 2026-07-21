@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { cookies } from "next/headers";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "../db";
@@ -68,7 +67,7 @@ function base64UrlDecode(value: string) {
 }
 
 function sessionSecret() {
-  const secret = (env as unknown as { SESSION_SECRET?: string }).SESSION_SECRET ?? "";
+  const secret = process.env.SESSION_SECRET ?? "";
   if (!secret) throw new Error("SESSION_SECRET이 설정되지 않았습니다.");
   return secret;
 }

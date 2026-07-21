@@ -15,7 +15,7 @@
 
 ## 현재 상태
 
-UI와 사용자 흐름을 검증하는 프로토타입입니다. 현재 분석 결과와 학생 데이터는 예시이며, 실제 운영을 위해서는 이미지 분석 API, 학생 데이터베이스, 로그인·권한 및 리포트 저장 기능을 연결해야 합니다.
+UI와 사용자 흐름을 검증하는 프로토타입입니다. 이메일/비밀번호 + 구글·카카오 로그인, 학생-로스터 자동 연동, 오답노트 제출·보관·PDF 내보내기 기능은 실제로 동작합니다. 문제 이미지 분석 결과는 아직 예시 데이터입니다.
 
 ## 실행 방법
 
@@ -23,6 +23,23 @@ Node.js 22.13 이상이 필요합니다.
 
 ```bash
 npm install
+```
+
+`.env.local`에 아래 환경변수를 설정해야 로그인 기능이 동작합니다.
+
+```
+POSTGRES_URL=              # Vercel 프로젝트의 Postgres(Neon) 연동에서 자동 발급
+BLOB_READ_WRITE_TOKEN=     # Vercel 프로젝트의 Blob 스토리지 연동에서 자동 발급
+SESSION_SECRET=            # 임의의 긴 문자열
+TEACHER_SIGNUP_CODE=       # 선생님 회원가입 시 필요한 비밀 코드
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+KAKAO_REST_API_KEY=
+KAKAO_CLIENT_SECRET=       # 선택
+```
+
+```bash
+npm run db:generate   # 스키마 변경 시 마이그레이션 생성
 npm run dev
 ```
 
@@ -35,11 +52,11 @@ npm run build
 ## 기술 구성
 
 - React 19
-- Next.js 16 호환 App Router
-- vinext / Vite
-- Cloudflare Workers 호환 빌드
+- Next.js 16 App Router (표준 `next` CLI)
+- Vercel Postgres(Neon) + Drizzle ORM
+- Vercel Blob (파일 저장)
 - TypeScript
 
-## 배포된 프로토타입
+## 배포
 
-[수학성장지도 바로가기](https://gahuis-math-lab.fluffy-cow-3410.chatgpt.site)
+Vercel에 GitHub 저장소를 Import하고, Storage 탭에서 Postgres와 Blob을 추가하면 `POSTGRES_URL`/`BLOB_READ_WRITE_TOKEN`이 자동으로 주입됩니다. 나머지 환경변수(`SESSION_SECRET`, `TEACHER_SIGNUP_CODE`, 구글/카카오 키)는 프로젝트 설정에서 직접 등록해야 하며, 배포 도메인을 구글·카카오 OAuth 콘솔의 리디렉션 URI에도 등록해야 소셜 로그인이 동작합니다.

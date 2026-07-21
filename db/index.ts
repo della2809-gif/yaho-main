@@ -1,13 +1,14 @@
-import { env } from "cloudflare:workers";
-import { drizzle } from "drizzle-orm/d1";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
 export function getDb() {
-  if (!env.DB) {
+  const connectionString = process.env.POSTGRES_URL ?? process.env.DATABASE_URL;
+  if (!connectionString) {
     throw new Error(
-      "Cloudflare D1 binding `DB` is unavailable. Set the `d1` field in .openai/hosting.json to `DB` or let your control plane inject the real binding values before using the database."
+      "POSTGRES_URL is unavailable. Add a Postgres storage integration in your Vercel project (or set POSTGRES_URL locally) before using the database."
     );
   }
 
-  return drizzle(env.DB, { schema });
+  return drizzle(neon(connectionString), { schema });
 }

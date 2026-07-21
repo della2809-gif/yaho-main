@@ -91,7 +91,7 @@ function renderHeaderPng(item: ArchiveSubmission) {
 async function toEmbeddablePng(bytes: Uint8Array, contentType: string): Promise<{ bytes: Uint8Array; kind: "png" | "jpg" }> {
   if (contentType === "image/jpeg") return { bytes, kind: "jpg" };
   if (contentType === "image/png") return { bytes, kind: "png" };
-  const blob = new Blob([bytes], { type: contentType });
+  const blob = new Blob([bytes as BlobPart], { type: contentType });
   const bitmap = await createImageBitmap(blob);
   const canvas = document.createElement("canvas");
   canvas.width = bitmap.width;

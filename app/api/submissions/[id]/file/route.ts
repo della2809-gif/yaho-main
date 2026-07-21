@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { env } from "cloudflare:workers";
 import { getDb } from "../../../../../db";
 import { mistakeSubmissions } from "../../../../../db/schema";
 import { getSessionUser } from "../../../../auth";
@@ -17,12 +16,11 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     return Response.json({ error: "접근 권한이 없습니다." }, { status: 403 });
   }
 
-  const bucket = (env as unknown as { UPLOADS?: R2Bucket }).UPLOADS;
-  const object = await bucket?.get(submission.fileKey);
-  if (!object) return Response.json({ error: "파일을 찾을 수 없습니다." }, { status: 404 });
+  const blobResponse = await fetch(submission.fileKey);
+  if (!blobResponse.ok || !blobResponse.body) return Response.json({ error: "파일을 찾을 수 없습니다." }, { status: 404 });
   const headers = new Headers();
-  object.writeHttpMetadata(headers);
+  headers.set("content-type", submission.contentType);
   headers.set("content-disposition", `inline; filename*=UTF-8''${encodeURIComponent(submission.fileName)}`);
   headers.set("cache-control", "private, max-age=60");
-  return new Response(object.body, { headers });
+  return new Response(blobResponse.body, { headers });
 }

@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../../db";
 import { users } from "../../../../../db/schema";
@@ -8,8 +7,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const stateToken = url.searchParams.get("state");
-  const restApiKey = (env as unknown as { KAKAO_REST_API_KEY?: string }).KAKAO_REST_API_KEY ?? "";
-  const clientSecret = (env as unknown as { KAKAO_CLIENT_SECRET?: string }).KAKAO_CLIENT_SECRET ?? "";
+  const restApiKey = process.env.KAKAO_REST_API_KEY ?? "";
+  const clientSecret = process.env.KAKAO_CLIENT_SECRET ?? "";
   if (!restApiKey) return Response.redirect(`${url.origin}/?error=kakao_not_configured`, 302);
   if (!code || !stateToken) return Response.redirect(`${url.origin}/?error=kakao_failed`, 302);
 

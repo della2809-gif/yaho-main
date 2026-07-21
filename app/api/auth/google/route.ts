@@ -1,9 +1,8 @@
-import { env } from "cloudflare:workers";
 import { signState } from "../../../auth";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const clientId = (env as unknown as { GOOGLE_CLIENT_ID?: string }).GOOGLE_CLIENT_ID ?? "";
+  const clientId = process.env.GOOGLE_CLIENT_ID ?? "";
   if (!clientId) return Response.redirect(`${url.origin}/?error=google_not_configured`, 302);
 
   const role = url.searchParams.get("role") === "teacher" ? "teacher" : "student";

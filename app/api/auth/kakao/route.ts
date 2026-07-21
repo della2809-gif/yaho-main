@@ -1,9 +1,8 @@
-import { env } from "cloudflare:workers";
 import { signState } from "../../../auth";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const restApiKey = (env as unknown as { KAKAO_REST_API_KEY?: string }).KAKAO_REST_API_KEY ?? "";
+  const restApiKey = process.env.KAKAO_REST_API_KEY ?? "";
   if (!restApiKey) return Response.redirect(`${url.origin}/?error=kakao_not_configured`, 302);
 
   const role = url.searchParams.get("role") === "teacher" ? "teacher" : "student";

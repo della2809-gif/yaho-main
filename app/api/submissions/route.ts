@@ -1,17 +1,11 @@
 import { desc, eq } from "drizzle-orm";
-import { env } from "cloudflare:workers";
+import { put } from "@vercel/blob";
 import { getDb } from "../../../db";
 import { mistakeSubmissions, students } from "../../../db/schema";
 import { getSessionUser } from "../../auth";
 
 const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "application/pdf"]);
 const maxBytes = 15 * 1024 * 1024;
-
-function uploads() {
-  const bucket = (env as unknown as { UPLOADS?: R2Bucket }).UPLOADS;
-  if (!bucket) throw new Error("파일 저장소가 연결되지 않았습니다.");
-  return bucket;
-}
 
 export async function GET() {
   const user = await getSessionUser();
@@ -50,10 +44,10 @@ export async function POST(request: Request) {
 
     const id = crypto.randomUUID();
     const safeName = file.name.replace(/[^a-zA-Z0-9가-힣._-]/g, "_").slice(-120) || "problem";
-    const fileKey = `submissions/${studentId}/${id}/${safeName}`;
-    await uploads().put(fileKey, file.stream(), { httpMetadata: { contentType: file.type }, customMetadata: { studentId, submissionId: id } });
+    const pathname = `submissions/${studentId}/${id}/${safeName}`;
+    const blob = await put(pathname, file, { access: "public", contentType: file.type });
     const db = getDb();
-    await db.insert(mistakeSubmissions).values({ id, studentId, fileKey, fileName: file.name.slice(0, 180), contentType: file.type, fileSize: file.size, note, subject, topic });
+    await db.insert(mistakeSubmissions).values({ id, studentId, fileKey: blob.url, fileName: file.name.slice(0, 180), contentType: file.type, fileSize: file.size, note, subject, topic });
     return Response.json({ id, message: "학원에 제출되었습니다." }, { status: 201 });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "제출하지 못했습니다." }, { status: 500 });

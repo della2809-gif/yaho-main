@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../../db";
 import { users } from "../../../../../db/schema";
@@ -8,8 +7,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const stateToken = url.searchParams.get("state");
-  const clientId = (env as unknown as { GOOGLE_CLIENT_ID?: string }).GOOGLE_CLIENT_ID ?? "";
-  const clientSecret = (env as unknown as { GOOGLE_CLIENT_SECRET?: string }).GOOGLE_CLIENT_SECRET ?? "";
+  const clientId = process.env.GOOGLE_CLIENT_ID ?? "";
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
   if (!clientId || !clientSecret) return Response.redirect(`${url.origin}/?error=google_not_configured`, 302);
   if (!code || !stateToken) return Response.redirect(`${url.origin}/?error=google_failed`, 302);
 

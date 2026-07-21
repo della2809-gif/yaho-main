@@ -1,4 +1,3 @@
-import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { getDb } from "../../../../db";
 import { users } from "../../../../db/schema";
@@ -20,7 +19,7 @@ export async function POST(request: Request) {
     if (!role) return Response.json({ error: "가입 유형을 선택해 주세요." }, { status: 400 });
 
     if (role === "teacher") {
-      const requiredCode = ((env as unknown as { TEACHER_SIGNUP_CODE?: string }).TEACHER_SIGNUP_CODE ?? "").trim();
+      const requiredCode = (process.env.TEACHER_SIGNUP_CODE ?? "").trim();
       if (!requiredCode || String(body.code ?? "").trim() !== requiredCode) {
         return Response.json({ error: "선생님 가입 코드가 올바르지 않습니다." }, { status: 403 });
       }
