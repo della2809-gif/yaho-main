@@ -3,6 +3,8 @@ import { getDb } from "../../../db";
 import { academySettings, students, users } from "../../../db/schema";
 import { getSessionUser, linkPendingUserToStudent, normalizeEmail } from "../../auth";
 
+const now = sql`to_char(now(), 'YYYY-MM-DD HH24:MI:SS')`;
+
 async function requireTeacher() {
   const user = await getSessionUser();
   return user?.role === "teacher" ? user : null;
@@ -90,13 +92,13 @@ export async function PATCH(request: Request) {
         teacherRole: String(payload.settings.teacherRole ?? "").trim().slice(0, 30),
       };
       if (Object.values(clean).some((value) => !value)) return Response.json({ error: "모든 항목을 입력해 주세요." }, { status: 400 });
-      await db.update(academySettings).set({ ...clean, updatedAt: sql`CURRENT_TIMESTAMP` }).where(eq(academySettings.id, 1));
+      await db.update(academySettings).set({ ...clean, updatedAt: now }).where(eq(academySettings.id, 1));
     }
 
     if (payload.student?.id) {
       const clean = cleanStudent(payload.student);
       if (!clean.name || !clean.grade) return Response.json({ error: "학생 이름과 학년을 입력해 주세요." }, { status: 400 });
-      await db.update(students).set({ ...clean, updatedAt: sql`CURRENT_TIMESTAMP` }).where(eq(students.id, payload.student.id));
+      await db.update(students).set({ ...clean, updatedAt: now }).where(eq(students.id, payload.student.id));
       if (clean.email) await linkPendingUserToStudent(payload.student.id, clean.email);
     }
 
