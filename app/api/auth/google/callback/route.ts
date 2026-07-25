@@ -9,11 +9,11 @@ export async function GET(request: Request) {
   const stateToken = url.searchParams.get("state");
   const clientId = process.env.GOOGLE_CLIENT_ID ?? "";
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET ?? "";
-  if (!clientId || !clientSecret) return Response.redirect(`${url.origin}/?error=google_not_configured`, 302);
-  if (!code || !stateToken) return Response.redirect(`${url.origin}/?error=google_failed`, 302);
+  if (!clientId || !clientSecret) return Response.redirect(`${url.origin}/login?error=google_not_configured`, 302);
+  if (!code || !stateToken) return Response.redirect(`${url.origin}/login?error=google_failed`, 302);
 
   const state = await verifyState<{ role: "teacher" | "student" }>(stateToken);
-  if (!state) return Response.redirect(`${url.origin}/?error=google_failed`, 302);
+  if (!state) return Response.redirect(`${url.origin}/login?error=google_failed`, 302);
 
   try {
     const redirectUri = `${url.origin}/api/auth/google/callback`;
@@ -56,6 +56,6 @@ export async function GET(request: Request) {
     await setSessionCookie(sessionId, isSecureRequest(request));
     return Response.redirect(`${url.origin}/`, 302);
   } catch {
-    return Response.redirect(`${url.origin}/?error=google_failed`, 302);
+    return Response.redirect(`${url.origin}/login?error=google_failed`, 302);
   }
 }

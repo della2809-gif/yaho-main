@@ -41,3 +41,11 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+.vercel
+.env*
+
+# vercel-installed agent skill docs
+.agents/
+.claude/
+skills-lock.json

@@ -9,11 +9,11 @@ export async function GET(request: Request) {
   const stateToken = url.searchParams.get("state");
   const restApiKey = process.env.KAKAO_REST_API_KEY ?? "";
   const clientSecret = process.env.KAKAO_CLIENT_SECRET ?? "";
-  if (!restApiKey) return Response.redirect(`${url.origin}/?error=kakao_not_configured`, 302);
-  if (!code || !stateToken) return Response.redirect(`${url.origin}/?error=kakao_failed`, 302);
+  if (!restApiKey) return Response.redirect(`${url.origin}/login?error=kakao_not_configured`, 302);
+  if (!code || !stateToken) return Response.redirect(`${url.origin}/login?error=kakao_failed`, 302);
 
   const state = await verifyState<{ role: "teacher" | "student" }>(stateToken);
-  if (!state) return Response.redirect(`${url.origin}/?error=kakao_failed`, 302);
+  if (!state) return Response.redirect(`${url.origin}/login?error=kakao_failed`, 302);
 
   try {
     const tokenBody = new URLSearchParams({ grant_type: "authorization_code", client_id: restApiKey, redirect_uri: `${url.origin}/api/auth/kakao/callback`, code });
@@ -62,6 +62,6 @@ export async function GET(request: Request) {
     await setSessionCookie(sessionId, isSecureRequest(request));
     return Response.redirect(`${url.origin}/`, 302);
   } catch {
-    return Response.redirect(`${url.origin}/?error=kakao_failed`, 302);
+    return Response.redirect(`${url.origin}/login?error=kakao_failed`, 302);
   }
 }

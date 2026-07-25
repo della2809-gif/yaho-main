@@ -3,7 +3,7 @@ import { signState } from "../../../auth";
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const clientId = process.env.GOOGLE_CLIENT_ID ?? "";
-  if (!clientId) return Response.redirect(`${url.origin}/?error=google_not_configured`, 302);
+  if (!clientId) return Response.redirect(`${url.origin}/login?error=google_not_configured`, 302);
 
   const role = url.searchParams.get("role") === "teacher" ? "teacher" : "student";
   const state = await signState({ role, nonce: crypto.randomUUID() });
