@@ -13,7 +13,7 @@ const errorMessages: Record<string, string> = {
 };
 
 export default function LoginClient() {
-  const [role, setRole] = useState<Role>("teacher");
+  const [role, setRole] = useState<Role>("student");
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,8 +51,8 @@ export default function LoginClient() {
         <div className="loginBrand"><span>√</span><div><b>수학성장지도</b><small>Math Path Lab</small></div></div>
 
         <div className="roleTabs" role="tablist" aria-label="계정 유형">
-          <button type="button" role="tab" aria-selected={role === "teacher"} className={role === "teacher" ? "active" : ""} onClick={() => setRole("teacher")}>선생님</button>
           <button type="button" role="tab" aria-selected={role === "student"} className={role === "student" ? "active" : ""} onClick={() => setRole("student")}>학생</button>
+          <button type="button" role="tab" aria-selected={role === "teacher"} className={role === "teacher" ? "active" : ""} onClick={() => setRole("teacher")}>선생님</button>
         </div>
 
         <span className="loginBadge">{role === "teacher" ? "학원·학부모 관리자" : "학생 전용"}</span>
