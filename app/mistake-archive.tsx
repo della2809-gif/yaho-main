@@ -218,6 +218,6 @@ export function MistakeArchive({ mode, submissions, students, onRefresh, fileUrl
       </div>
       <time>{formatDate(item.createdAt)}</time>
       <a href={fileUrlFor(item.id)} target="_blank" rel="noreferrer">파일 보기</a>
-    </div>)}</div> : <div className="emptyInbox"><b>{submissions.length ? "조건에 맞는 오답노트가 없어요." : "아직 제출된 문제가 없습니다."}</b>{mode === "teacher" && !submissions.length && <span>학생별 ‘링크’ 버튼으로 전용 페이지를 보내 주세요.</span>}</div>}
+    </div>)}</div> : <div className="emptyInbox"><b>{submissions.length ? "조건에 맞는 오답노트가 없어요." : mode === "teacher" ? "아직 제출된 문제가 없습니다." : "아직 저장된 오답이 없어요."}</b>{mode === "teacher" && !submissions.length && <span>학생별 ‘링크’ 버튼으로 전용 페이지를 보내 주세요.</span>}{mode === "student" && !submissions.length && <span>오답 분석 탭에서 문제를 저장해 보세요.</span>}</div>}
   </article>;
 }
